@@ -9,6 +9,7 @@ Authors: Mikael Ly, Minh Tam Nguyen, Xiaomei He
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Link } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
@@ -53,7 +54,7 @@ export default function Home() {
         </View>
 
       </View>
-
+      <Link href={'/progress'}> <Text>to progress</Text></Link>
     </ScrollView>
   );
 }
