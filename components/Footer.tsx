@@ -1,4 +1,4 @@
-// app/components/Footer.tsx
+
 import { Link, usePathname } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
