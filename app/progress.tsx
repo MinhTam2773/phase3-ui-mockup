@@ -1,7 +1,8 @@
 import CircleProgress from "@/components/CircleProgress";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -56,8 +57,8 @@ const ProgressPage = () => {
         <View style={{ flexDirection: "column", gap: 10 }}>
           <Text style={styles.subheader}>Progress by Topic</Text>
           {/* Algebra  */}
-          <View style={styles.topicCard}>
-            <View style={{flexDirection: 'row', gap: 10}}>
+          <View style={styles.card}>
+            <View style={{ flexDirection: "row", gap: 10 }}>
               <View style={styles.topicIcon}>
                 <MaterialCommunityIcons
                   name="math-integral"
@@ -65,48 +66,93 @@ const ProgressPage = () => {
                   color="#543cda"
                 />
               </View>
-              <View style={{justifyContent: 'center', gap: 5}}>
-                <Text style={{ fontSize: 20, fontWeight: "600" }}>Algebra</Text>
-                <Text style={{ color: "gray" }}>90% Mastery</Text>
+              <View style={{ justifyContent: "center", gap: 5 }}>
+                <Text style={styles.cardHeader}>Algebra</Text>
+                <Text style={styles.cardSubheader}>90% Mastery</Text>
               </View>
             </View>
             <View style={styles.progressBar}>
-              <View style={{...styles.progressFill, width: '90%'}}></View>
+              <View style={{ ...styles.progressFill, width: "90%" }}></View>
             </View>
           </View>
           {/* History   */}
-          <View style={styles.topicCard}>
-            <View style={{flexDirection: 'row', gap: 10}}>
+          <View style={styles.card}>
+            <View style={{ flexDirection: "row", gap: 10 }}>
               <View style={styles.topicIcon}>
                 <MaterialIcons name="history-edu" size={32} color="#543cda" />
               </View>
-              <View style={{justifyContent: 'center', gap: 5}}>
-                <Text style={{ fontSize: 20, fontWeight: "600" }}>History</Text>
-                <Text style={{ color: "gray" }}>20% Mastery</Text>
+              <View style={{ justifyContent: "center", gap: 5 }}>
+                <Text style={styles.cardHeader}>History</Text>
+                <Text style={styles.cardSubheader}>20% Mastery</Text>
               </View>
             </View>
             <View style={styles.progressBar}>
-              <View style={{...styles.progressFill, width: '20%'}}></View>
+              <View style={{ ...styles.progressFill, width: "20%" }}></View>
             </View>
           </View>
           {/* Biology  */}
-          <View style={styles.topicCard}>
-            <View style={{flexDirection: 'row', gap: 10}}>
+          <View style={styles.card}>
+            <View style={{ flexDirection: "row", gap: 10 }}>
               <View style={styles.topicIcon}>
                 <MaterialIcons name="biotech" size={32} color="#543cda" />
               </View>
-              <View style={{justifyContent: 'center', gap: 5}}>
-                <Text style={{ fontSize: 20, fontWeight: "600" }}>Biology</Text>
-                <Text style={{ color: "gray" }}>67% Mastery</Text>
+              <View style={{ justifyContent: "center", gap: 5 }}>
+                <Text style={styles.cardHeader}>Biology</Text>
+                <Text style={styles.cardSubheader}>67% Mastery</Text>
               </View>
             </View>
             <View style={styles.progressBar}>
-              <View style={{...styles.progressFill, width: '67%'}}></View>
+              <View style={{ ...styles.progressFill, width: "67%" }}></View>
             </View>
           </View>
         </View>
 
         {/* Recent Activity  */}
+        <View style={{gap: 10}}>
+          <Text style={styles.subheader}>Recent Activity</Text>
+          {/* Calculus Basics */}
+          <View style={styles.card}>
+            <View>
+              <Text style={styles.cardHeader}>Calculus Basics</Text>
+              <Text style={styles.cardSubheader}>October 28, 2025</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <Text
+                style={{ fontSize: 20, fontWeight: "700", color: "#543cda" }}
+              >
+                95%
+              </Text>
+              <AntDesign name="star" size={20} color="#feff00" />
+            </View>
+          </View>
+          {/* Organic Chemistry Intro */}
+          <View style={styles.card}>
+            <View>
+              <Text style={styles.cardHeader}>Calculus Basics</Text>
+              <Text style={styles.cardSubheader}>October 28, 2025</Text>
+            </View>
+            <Text style={{ fontSize: 20, fontWeight: "700"}}>
+              67%
+            </Text>
+          </View>
+          {/* World War II Events */}
+          <View style={styles.card}>
+            <View>
+              <Text style={styles.cardHeader}>World War II Events</Text>
+              <Text style={styles.cardSubheader}>November 21, 2025</Text>
+            </View>
+            <Text style={{ fontSize: 20, fontWeight: "700"}}>
+              81%
+            </Text>
+          </View>
+        </View>
       </ScrollView>
     </View>
   );
@@ -116,7 +162,6 @@ export default ProgressPage;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     gap: 30,
     paddingHorizontal: 10,
     marginTop: 30,
@@ -175,10 +220,10 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "700",
   },
-  topicCard: {
+  card: {
     flexDirection: "row",
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 14,
     borderWidth: 1,
     borderColor: "#e5e7eb",
@@ -205,15 +250,22 @@ const styles = StyleSheet.create({
     width: 120,
     height: 10,
     borderRadius: 20,
-    overflow: 'hidden',
-    zIndex: 0
+    overflow: "hidden",
+    zIndex: 0,
   },
   progressFill: {
-    backgroundColor:'#543cda',
-    height:'100%'
+    backgroundColor: "#543cda",
+    height: "100%",
   },
   subheader: {
     fontSize: 20,
-    fontWeight: '700'
-  }
+    fontWeight: "700",
+  },
+  cardHeader: {
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  cardSubheader: {
+    color: "gray",
+  },
 });
