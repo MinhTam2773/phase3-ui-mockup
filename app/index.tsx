@@ -135,7 +135,7 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   mainContainer: {
-
+    backgroundColor: 'white'
   }, 
   headerContainer: {
     alignItems: 'center',
@@ -181,8 +181,8 @@ const styles = StyleSheet.create({
   bodyContainer: {
     margin: 10,
     flexGrow: 1,
-    gap: 5
-
+    gap: 5,
+    backgroundColor: 'white'
   },
   bodyHeader: {
     fontSize: 16,

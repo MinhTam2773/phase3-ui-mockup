@@ -8,7 +8,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 const ProgressPage = () => {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <View style={styles.headerContainer}>
         {/* Invisible placeholder icon (balances spacing) */}
         <Ionicons name="options" size={24} color="transparent" />
@@ -165,6 +165,8 @@ const styles = StyleSheet.create({
     gap: 30,
     paddingHorizontal: 10,
     marginTop: 30,
+    backgroundColor: 'white',
+    paddingBottom: 100
   },
   header: {
     textAlign: "center",
