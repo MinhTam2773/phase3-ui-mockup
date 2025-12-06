@@ -1,32 +1,52 @@
 import { supabase } from "@/lib/supabase";
 import { AuthContextType, SignInFormProps, SignUpFormProps } from "@/lib/types";
-import { Session, User } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { router } from "expo-router";
 import {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
 
-  //check session
   useEffect(() => {
+    // 1) Listen for auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        // console.log(session?.user);
         if (!session) router.push("/auth/sign-in");
-        setSession(session);
         setUser(session?.user ?? null);
       }
     );
 
+    // 2) Immediately check the currently logged-in user
+    const getCurrentUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("getUser error:", error);
+        return;
+      }
+
+      // If no user → redirect
+      if (!data.user) {
+        router.push("/auth/sign-in");
+        return;
+      }
+
+      // Otherwise set state
+      setUser(data.user);
+      console.log("Current user:", data.user);
+    };
+
+    getCurrentUser();
+
+    // Cleanup the listener
     return () => authListener.subscription.unsubscribe();
   }, []);
 
@@ -43,9 +63,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
     console.log("SIGNUP DATA:", data);
     console.log("SIGNUP ERROR:", error);
-    
+
     // Case 1: email exists as regular account
-    if (data.user && data.user?.identities.length === 0) {
+    if (data.user && data.user?.identities?.length === 0) {
       throw new Error(
         "This email is already registered. Please sign in instead."
       );
@@ -74,7 +94,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       throw new Error(error.message);
     }
 
-    router.push('/')
+    router.push("/");
   };
 
   const signInOAuth = async (provider: "google" | "facebook") => {
