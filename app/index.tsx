@@ -11,11 +11,12 @@ import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Home() {
-
+  
+  const router = useRouter();
 
 
   return (
@@ -62,10 +63,12 @@ export default function Home() {
 
       {/* Main Body */}
       <View style={styles.bodyContainer}>
-        {/* Begin Random Quiz button */}
-        <TouchableOpacity style={{backgroundColor: "#715bf0ff", padding: 5, borderRadius: 20, borderWidth: 2, borderColor: "#543cda"}}>
-          <Text style={{textAlign: 'center', fontSize: 20, color: "#ffff"}}>Begin Random Quiz</Text>
-        </TouchableOpacity>
+        {/* Begin Random Quiz button (Defaults to ID 1 for now, Elden Theory)*/}
+        <Link href={{pathname: `/quizzes/[quizId]`, params: { quizId: String(1)}}} asChild> 
+          <TouchableOpacity style={{backgroundColor: "#715bf0ff", padding: 5, borderRadius: 20, borderWidth: 2, borderColor: "#543cda"}}>
+            <Text style={{textAlign: 'center', fontSize: 20, color: "#ffff"}}>Begin Random Quiz</Text>
+          </TouchableOpacity>
+        </Link>
 
         {/* Calculus Basics */}
         <Text style={styles.bodyHeader}> Continue Learning </Text>
@@ -113,8 +116,10 @@ export default function Home() {
           <CategoryCard topic="History" numberQuizzes='20+'/>
         </View>
         <View style={categories.categoriesRow}>
-          <CategoryCard topic="Elden Theory" numberQuizzes='15'/>
+            <CategoryCard topic="Elden Theory" numberQuizzes='15' onPress={()=>
+               router.push({pathname: `/quizzes/[quizId]`, params: { quizId: String(1)}})}/>
           <CategoryCard topic="Ring Theory" numberQuizzes='10'/>
+          
         </View>
         <View style={categories.categoriesRow}>
           <CategoryCard topic="Biology" numberQuizzes='20+'/>

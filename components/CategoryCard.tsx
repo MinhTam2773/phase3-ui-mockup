@@ -1,14 +1,16 @@
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
     topic: string
-    numberQuizzes: string
+    numberQuizzes: string,
+    onPress?: () => void;
 }
 
-const CategoryCard = ({topic, numberQuizzes}: Props) => {
+const CategoryCard = ({topic, numberQuizzes, onPress}: Props) => {
+
   return (
-    <TouchableOpacity style={categories.categoriesCard}>
+    <TouchableOpacity style={categories.categoriesCard} onPress={onPress}>
         <View style={{alignContent: 'center'}}>
             <Text style={categories.categoriesHeader}>{topic}</Text>
             <Text style={categories.categoriesSubHeader}>{numberQuizzes} quizzes</Text>
