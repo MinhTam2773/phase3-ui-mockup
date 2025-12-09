@@ -148,7 +148,7 @@ export default function Home() {
         <Link
           href={{
             pathname: `/quizzes/[quizId]`,
-            params: { quizId: String(1) },
+            params: { quizId: String("d051862d-2250-4997-9de9-ce796655621d") },
           }}
           asChild
         >
@@ -312,7 +312,7 @@ export default function Home() {
             onPress={() =>
               router.push({
                 pathname: `/quizzes/[quizId]`,
-                params: { quizId: String(1) },
+                params: { quizId: "d051862d-2250-4997-9de9-ce796655621d" },
               })
             }
           />

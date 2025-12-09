@@ -14,13 +14,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Data types for a Quiz, based off of database tables
 export type Choice = {
-    choice_id: number;
+    choice_id: string;
     label: string;
     is_correct: boolean;
 }
 
 export type Question = {
-    question_id: number;
+    question_id: string;
     prompt: string;
     is_active: boolean;
     explanation_true: string;
@@ -31,7 +31,7 @@ export type Question = {
 }
 
 export type Quiz = {
-        quiz_id: number;
+        quiz_id: string;
         title: string;
         description: string;
         questions: Question[]
@@ -39,7 +39,7 @@ export type Quiz = {
     }
 
 // Get a quiz + questions from the Supabase Database, given a quizId
-export async function getQuiz(quizId: number): Promise<Quiz> {
+export async function getQuiz(quizId: string): Promise<Quiz> {
     const { data, error } = await supabase
     .from('quizzes')
     .select(`
@@ -84,13 +84,13 @@ export default function QuizInterface() {
   const router = useRouter();
 
   const {quizId: quizIdParam} = useLocalSearchParams();
-  const quizId = Array.isArray(quizIdParam) ? Number(quizIdParam[0]) : Number(quizIdParam);
+  const quizId = Array.isArray(quizIdParam) ? (quizIdParam[0]) : (quizIdParam);
 
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState(`test`);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
-  const [selectedChoiceId, setselectedChoiceId] = useState<number | null>(null);
+  const [selectedChoiceId, setselectedChoiceId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [score, setScore] = useState(0);
 
