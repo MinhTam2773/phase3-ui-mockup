@@ -1,4 +1,6 @@
+import { Choice, Question, Quiz } from "@/app/quizzes/quiz";
 import { GoogleGenAI } from "@google/genai";
+import { supabase } from "./supabase";
 
 // The client gets the API key from the environment variable `GEMINI_API_KEY`.
 const ai = new GoogleGenAI({ apiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY! });
@@ -14,23 +16,7 @@ interface GeneratedQuiz {
   description: string;
   created_at: string;
   is_published: boolean;
-  questions: {
-    question_id: string;
-    prompt: string;
-    question_type: string;
-    explanation_true: string;
-    explanation_false: string;
-    is_active: boolean;
-    created_at: string;
-    quiz_id: string;
-    choices: {
-      choice_id: string;
-      label: string;
-      is_correct: boolean;
-      created_at: string;
-      question_id: string;
-    }[];
-  }[];
+  questions: Question[];
 }
 
 export async function generateQuizzes(
@@ -89,7 +75,7 @@ IMPORTANT:
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-pro",
       contents: prompt,
     });
 
@@ -97,6 +83,7 @@ IMPORTANT:
 
     // Try to parse the JSON response
     try {
+      if (!responseText) throw new Error("Error with response text");
       const jsonStart = responseText.indexOf("{");
       const jsonEnd = responseText.lastIndexOf("}") + 1;
       const jsonString = responseText.substring(jsonStart, jsonEnd);
@@ -112,7 +99,7 @@ IMPORTANT:
         throw new Error("Invalid quiz structure generated");
       }
 
-      console.log("Quizzes generated successfully!");
+      console.log("Quizzes generated successfully!" + quizData);
       return quizData;
     } catch (parseError) {
       console.error("Failed to parse AI response as JSON:", parseError);
@@ -125,9 +112,97 @@ IMPORTANT:
   }
 }
 
-// Alternative: If you want a function that returns separate arrays for each table
-export async function generateQuizData(params: QuizGenerationParams) {
+export async function insertAIGeneratedQuiz(
+  params: {quiz: Quiz,questions: Question[], choices: Choice[] },
+  userId?: string | undefined
+) {
+  try {
+    // Generate the quiz data
+    const { quiz, questions, choices } = params;
+
+    // Start a transaction by using multiple insert operations
+    // First, insert the quiz
+    const { data: insertedQuiz, error: quizError } = await supabase
+      .from("quizzes")
+      .insert([
+        {
+          ...quiz,
+          is_published: true, // Set to true since it's generated for immediate use
+        },
+      ])
+      .select()
+      .single();
+
+    if (quizError) {
+      console.error("Error inserting quiz:", quizError);
+      throw new Error(`Failed to insert quiz: ${quizError.message}`);
+    }
+
+    console.log("Quiz inserted successfully:", insertedQuiz.quiz_id);
+
+    // Update the quiz_id in questions to match the inserted quiz
+    const questionsWithCorrectQuizId = questions.map((q) => ({
+      ...q,
+      quiz_id: insertedQuiz.quiz_id,
+    }));
+
+    // Insert questions
+    const { data: insertedQuestions, error: questionsError } = await supabase
+      .from("questions")
+      .insert(questionsWithCorrectQuizId)
+      .select();
+
+    if (questionsError) {
+      console.error("Error inserting questions:", questionsError);
+      throw new Error(`Failed to insert questions: ${questionsError.message}`);
+    }
+
+    console.log(
+      `${insertedQuestions?.length || 0} questions inserted successfully`
+    );
+
+    // Update question_id in choices to match the inserted questions
+    const choicesWithCorrectQuestionIds = choices.map((choice) => {
+      const matchingQuestion = insertedQuestions?.find(
+        (q) => q.question_id === choice.question_id
+      );
+      return {
+        ...choice,
+        question_id: matchingQuestion?.question_id || choice.question_id,
+      };
+    });
+
+    // Insert choices
+    const { data: insertedChoices, error: choicesError } = await supabase
+      .from("choices")
+      .insert(choicesWithCorrectQuestionIds);
+
+    if (choicesError) {
+      console.error("Error inserting choices:", choicesError);
+      throw new Error(`Failed to insert choices: ${choicesError.message}`);
+    }
+
+    console.log(
+      `${choicesWithCorrectQuestionIds.length} choices inserted successfully`
+    );
+
+    // Return the complete inserted quiz data
+    return {
+      quiz: insertedQuiz,
+      questions: insertedQuestions || [],
+      choices: insertedChoices || [],
+    };
+  } catch (error) {
+    console.error("Error inserting AI-generated quiz:", error);
+    throw error;
+  }
+}
+
+//returns separate arrays for each table
+export async function generateQuizData(params: QuizGenerationParams, userId: string | undefined) {
   const generatedQuiz = await generateQuizzes(params);
+
+  console.log("separating...")
 
   // Extract data for each table
   const quizData = {
@@ -159,33 +234,12 @@ export async function generateQuizData(params: QuizGenerationParams) {
     }))
   );
 
+//   console.log("inserting")
+//   await insertAIGeneratedQuiz({quizData, questionsData, choicesData}, userId);
+
   return {
     quiz: quizData,
     questions: questionsData,
     choices: choicesData,
   };
 }
-
-// // Insert into Supabase
-// // First insert quiz
-// const { data: quiz, error: quizError } = await supabase
-//   .from('quizzes')
-//   .insert([quizData.quiz])
-//   .select();
-//
-// if (quizError) throw quizError;
-//
-// // Insert questions
-// const { data: questions, error: questionsError } = await supabase
-//   .from('questions')
-//   .insert(quizData.questions)
-//   .select();
-//
-// if (questionsError) throw questionsError;
-//
-// // Insert choices
-// const { data: choices, error: choicesError } = await supabase
-//   .from('choices')
-//   .insert(quizData.choices);
-//
-// if (choicesError) throw choicesError;

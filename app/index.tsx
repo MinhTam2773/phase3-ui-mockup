@@ -64,9 +64,9 @@ export default function Home() {
       {/* Main Body */}
       <View style={styles.bodyContainer}>
         {/* Begin Random Quiz button (Defaults to ID 1 for now, Elden Theory)*/}
-        <Link href={{pathname: `/quizzes/quiz?topic=Mathematics&difficulty=medium`}} asChild> 
+        <Link href={{pathname: `/quizzes/quiz-input`}} asChild> 
           <TouchableOpacity style={{backgroundColor: "#715bf0ff", padding: 5, borderRadius: 20, borderWidth: 2, borderColor: "#543cda"}}>
-            <Text style={{textAlign: 'center', fontSize: 20, color: "#ffff"}}>Begin Random Quiz</Text>
+            <Text style={{textAlign: 'center', fontSize: 20, color: "#ffff"}}>Create New Quiz</Text>
           </TouchableOpacity>
         </Link>
 

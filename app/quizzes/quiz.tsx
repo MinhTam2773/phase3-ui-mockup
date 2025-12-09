@@ -2,10 +2,11 @@
 It takes topic and difficulty as parameters and generates a quiz using AI.
 */
 
+import { useAuth } from '@/context/auth-context';
 import { generateQuizData } from '@/lib/quiz-service';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Data types for a Quiz
@@ -13,6 +14,8 @@ export type Choice = {
     choice_id: string;
     label: string;
     is_correct: boolean;
+    question_id: string;
+    created_at: Date;
 }
 
 export type Question = {
@@ -23,6 +26,8 @@ export type Question = {
     explanation_false: string;
     question_type: 'single';
     choices: Choice[];
+    created_at: Date;
+    quiz_id: string;
 }
 
 export type Quiz = {
@@ -30,13 +35,15 @@ export type Quiz = {
     title: string;
     description: string;
     questions: Question[];
+    created_at: string;
+    is_published: boolean;
 }
 
 // Get an AI-generated quiz
-async function getAIGeneratedQuiz(topic: string, difficulty: 'easy' | 'medium' | 'hard'): Promise<Quiz> {
+async function getAIGeneratedQuiz(topic: string, difficulty: 'easy' | 'medium' | 'hard', userId: string | undefined): Promise<Quiz> {
     try {
         // Use the generateQuizData function which returns properly separated data
-        const { quiz, questions, choices } = await generateQuizData({ topic, difficulty });
+        const { quiz, questions, choices } = await generateQuizData({ topic, difficulty }, userId);
         
         // Transform the data to match our Quiz structure
         const quizData: Quiz = {
@@ -51,7 +58,7 @@ async function getAIGeneratedQuiz(topic: string, difficulty: 'easy' | 'medium' |
                 explanation_false: q.explanation_false,
                 is_active: q.is_active,
                 choices: choices
-                    .filter(c => c.question_id === q.question_id)
+                    .filter((c : Choice) => c.question_id === q.question_id)
                     .map(c => ({
                         choice_id: c.choice_id,
                         label: c.label,
@@ -81,6 +88,7 @@ function shuffle<T>(arr: T[]): T[] {
 // Interface for a quiz
 export default function QuizInterface() {
   const router = useRouter();
+  const {user} = useAuth();
   const { topic, difficulty } = useLocalSearchParams();
   
   const quizTopic = Array.isArray(topic) ? topic[0] : topic;
@@ -120,16 +128,18 @@ export default function QuizInterface() {
         try {
             const { title, questions } = await getAIGeneratedQuiz(
                 quizTopic, 
-                quizDifficulty as 'easy' | 'medium' | 'hard'
+                quizDifficulty as 'easy' | 'medium' | 'hard',
+                user?.id
             );
             setTitle(title);
             setQuestions(questions);
-        } catch (e) {
+
+          } catch (e) {
             console.log('Failed to generate quiz', e);
             setError('Failed to generate quiz. Please try again.');
-        } finally {
+          } finally {
             setLoading(false);
-        }
+          }
       })();
   }, [quizTopic, quizDifficulty]);
 
@@ -194,7 +204,7 @@ export default function QuizInterface() {
     return (
       <SafeAreaView style={styles.stateContainer}>
         <ActivityIndicator size="large" />
-        <Text style={{marginTop: 16, fontSize: 16}}>Generating your {quizDifficulty} quiz on {quizTopic}...</Text>
+        <Text style={{marginTop: 16, fontSize: 16, textAlign: 'center'}}>Generating your {quizDifficulty} quiz on {quizTopic}...</Text>
         <Text style={{marginTop: 8, color: '#666', textAlign: 'center'}}>
           This may take a few seconds
         </Text>
@@ -218,7 +228,7 @@ export default function QuizInterface() {
   }
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
+    <ScrollView contentContainerStyle={styles.mainContainer}>
       {/* Header Area */}
       <View style={styles.headerContainer}>
         <Text style={styles.quizTitle}>{title}</Text>
@@ -322,7 +332,7 @@ export default function QuizInterface() {
           </>
         )}
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
