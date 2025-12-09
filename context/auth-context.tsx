@@ -29,7 +29,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       const { data, error } = await supabase.auth.getUser();
 
       if (error) {
-        console.error("getUser error:", error);
+        console.log("getUser error:", error);
+        router.push("/auth/sign-in");
         return;
       }
 
@@ -61,26 +62,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       },
     });
 
-    console.log("SIGNUP DATA:", data);
-    console.log("SIGNUP ERROR:", error);
-
-    // Case 1: email exists as regular account
-    if (data.user && data.user?.identities?.length === 0) {
-      throw new Error(
-        "This email is already registered. Please sign in instead."
-      );
+    if (data.session?.user) {
+      console.log("Sign up successfully");
+      router.replace("/");
     }
-    if (error) {
-      const msg = error.message;
-      // Case 2: email was created via OAuth (Google, Facebook, etc.)
-      if (msg.includes("Email rate limit") || error.status === 400) {
-        throw new Error(
-          "This email was created using Google/Facebook. Please sign in with that provider."
-        );
-      }
 
-      // fallback
-      throw new Error(msg);
+    if (error) {
+      console.log(error.message);
     }
   };
 
@@ -97,21 +85,22 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     router.push("/");
   };
 
-  const signInOAuth = async (provider: "google" | "facebook") => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-    });
-
-    if (error) console.log(error.message);
-  };
+  const signOut = async () => {
+    const {error} = await supabase.auth.signOut();
+    if (error) {
+      console.error(error);
+    }
+    else router.push('/auth/sign-in');
+    setUser(null);
+  }
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        signInOAuth,
         signInWithCredentials,
         signUpWithCredentials,
+        signOut,
       }}
     >
       {children}

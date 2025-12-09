@@ -11,7 +11,7 @@ const ProgressPage = () => {
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <View style={styles.headerContainer}>
         {/* Invisible placeholder icon (balances spacing) */}
-        <Ionicons name="options" size={24} color="transparent" />
+        <Ionicons name="options" size={24} color="white" />
         <Text style={styles.header}>My Progress</Text>
         <Ionicons
           name="options"

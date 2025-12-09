@@ -1,6 +1,4 @@
 import { useAuth } from '@/context/auth-context';
-import Entypo from '@expo/vector-icons/Entypo';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
@@ -26,7 +24,7 @@ const signInSchema = Yup.object().shape({
 });
 
 const SigninForm = () => {
-  const {signInOAuth, signInWithCredentials} = useAuth();
+  const { signInWithCredentials} = useAuth();
   const [error, setError] = useState<string>("");
 
   const handleLogin = async (values: SignInFormValues) => {
@@ -42,21 +40,6 @@ const SigninForm = () => {
       <Text style={styles.subtitle}>
         Login with your Apple or Google account
       </Text>
-
-      <TouchableOpacity onPress={async () => await signInOAuth('facebook')} style={styles.oauthLoginContainer}>
-        <Entypo name="facebook" size={20} color="black" />
-        <Text style={styles.oauthLoginText}>Login with Facebook</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={async () => await signInOAuth('google')} style={styles.oauthLoginContainer}>
-        <FontAwesome name="google" size={20} color="black" />
-        <Text style={styles.oauthLoginText}>Login with Google</Text>
-      </TouchableOpacity>
-
-      <View style={styles.dividerContainer}>
-        <View style={styles.hr}></View>
-        <Text style={{color: 'gray'}}>Or continue with</Text>
-        <View style={styles.hr}></View>
-      </View>
 
       <Formik<SignInFormValues>
         initialValues={{ email: "", password: "" }}
@@ -134,22 +117,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e6e6e9",
   },
-  oauthLoginContainer: {
-    flexDirection: "row",
-    justifyContent: 'center',
-    gap: 10,
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 10,
-    padding: 12,
-    marginTop: 12,
-    backgroundColor: "#ffffff",
-    fontSize: 16,
-  },
-  oauthLoginText: {
-    fontWeight: "600"
-  },
   title: {
     fontSize: 24,
     fontWeight: "700",
@@ -161,19 +128,6 @@ const styles = StyleSheet.create({
     color: "gray",
     textAlign: "center",
     marginBottom: 20,
-  },
-  dividerContainer: {
-    flexDirection: "row",
-    marginTop: 30, 
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 10,
-    marginBottom: 10,
-  }, 
-  hr: {
-    width: "32%",
-    height: 1,
-    backgroundColor: '#e9e8ed'
   },
   label: {
     fontWeight: '600',

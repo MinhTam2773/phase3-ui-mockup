@@ -1,14 +1,20 @@
 import Footer from "@/components/Footer";
 import { AuthContextProvider } from "@/context/auth-context";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import React from "react";
-import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
+  const path = usePathname();
+  const backgroundColor = path.startsWith("/auth") ? "#543cda" : "#ffffff"
   return (
     <AuthContextProvider>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: `${backgroundColor}`,
+        }}
+      >
         <Stack
           screenOptions={{
             headerShown: false,
@@ -17,15 +23,8 @@ export default function RootLayout() {
             },
           }}
         />
-        <Footer />
+        {!path.startsWith("/auth") && <Footer />}
       </SafeAreaView>
     </AuthContextProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff'
-  }
-});
