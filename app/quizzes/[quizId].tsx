@@ -1,6 +1,9 @@
 /* This is the page where a user will be able to do a quiz, given a parameter of quizID.
 For testing purposes, quizId 1 = Elden Theory.
 
+It takes in info from the supabase API and database, 
+and gives an interactable quiz for the user to solve.
+
 */
 
 import { supabase } from '@/lib/supabase';
@@ -9,7 +12,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Data types for a Quiz
+// Data types for a Quiz, based off of database tables
 export type Choice = {
     choice_id: number;
     label: string;
@@ -35,7 +38,7 @@ export type Quiz = {
 
     }
 
-// Get a quiz + questions from the Supabase Database
+// Get a quiz + questions from the Supabase Database, given a quizId
 export async function getQuiz(quizId: number): Promise<Quiz> {
     const { data, error } = await supabase
     .from('quizzes')
@@ -66,6 +69,7 @@ export async function getQuiz(quizId: number): Promise<Quiz> {
         choices: shuffle(q.choices ?? []),
     }));
 
+    // return a quiz along with an array of questions related to that quiz
     return { quiz_id: data.quiz_id, title: data.title, description: data.description, questions };
 } 
 
@@ -92,6 +96,7 @@ export default function QuizInterface() {
 
   const question = questions[index];
 
+  // useEffect to load in the quiz from database when page is first loaded (given a quizId)
   useEffect(() => {
       (async () => {
         if (!quizId) {
@@ -111,13 +116,14 @@ export default function QuizInterface() {
       })();
   }, [quizId]);
 
+  // useEffect to reset the user's selected choice when question index changes
   useEffect(() => {
       setselectedChoiceId(null);
       setFeedback(null);
   }, [index]);
 
     
-    // Check if answer is correct
+  // Check if answer is correct
   const is_correct = useMemo(() => {
       if (!question || selectedChoiceId == null) return false;
       const selected = question.choices.find(c => c.choice_id === selectedChoiceId);
@@ -215,25 +221,23 @@ export default function QuizInterface() {
 
         {/* Submit + Feedback section */}
       <View style={styles.submitContainer}>
+        {/* Submit Button */}
         {feedback === null ? (
           <Pressable
             onPress={submit}
             disabled={selectedChoiceId == null}
             style={{
               backgroundColor: selectedChoiceId != null ? '#2563eb' : '#93c5fd',
-              padding: 12,
-              borderRadius: 8,
-              flex: 1,
-              alignItems: 'center',
+              ...styles.submitButton
             }}
           >
-            <Text style={{ color: '#fff', fontWeight: '600' }}>Submit</Text>
+            <Text style={styles.submitText}>Submit</Text>
           </Pressable>
         ) : (
           <>
           {/* Feedback Block */}
             <View style={styles.feedbackContainer}>
-              <Text style={{ fontWeight: '600', color: feedback === 'correct' ? '#065f46' : '#7f1d1d' }}>
+              <Text style={{ fontWeight: '600', color: feedback === 'correct' ? '#00ac42ff' : '#7f1d1d' }}>
                 {feedback === 'correct' ? 'Correct!' : 'Incorrect'}
               </Text>
               {explanation ? (
@@ -245,7 +249,7 @@ export default function QuizInterface() {
             {/* Next / Finish button */}
             <Pressable
               onPress={next}
-              style={{ backgroundColor: '#10b981', padding: 12, borderRadius: 8, alignItems: 'center', flex: 1 }}
+              style={{ backgroundColor: '#00ac42ff', padding: 12, borderRadius: 8, alignItems: 'center', flex: 1 }}
             >
               <Text style={{ color: '#fff', fontWeight: '600' }}>
                 {index < questions.length - 1 ? 'Next' : 'Finish'}
@@ -264,14 +268,18 @@ const styles = StyleSheet.create({
       flex: 1
     },
     headerContainer: {
-      padding: 16
+      padding: 16,
+      backgroundColor: "#543cda"
     },
     quizTitle: {
-      fontSize: 20,
-      fontWeight: '600'
+      fontSize: 26,
+      fontWeight: '600',
+      color: "#ffff"
     },
     quizProgress: {
-      marginTop: 8
+      marginTop: 8,
+      color: "#ffff"
+
     },
     questionPromptContainer: {
       paddingHorizontal: 16,
@@ -299,11 +307,22 @@ const styles = StyleSheet.create({
     },
     submitContainer: {
       padding: 16, 
-      flexDirection: 'row',
+      flexDirection: 'column',
       gap: 12
     },
+    submitButton: {
+      padding: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    submitText: {
+      color: "#ffff",
+      fontWeight: '600',
+      textAlign: 'center',
+
+    },
     feedbackContainer: {
-      flex: 1,
       alignItems: 'center',
       justifyContent: 'center'
     }, 
