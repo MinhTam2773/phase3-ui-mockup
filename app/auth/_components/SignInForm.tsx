@@ -1,4 +1,5 @@
-import { useAuth } from '@/context/auth-context';
+import { useAuth } from "@/context/auth-context";
+import { useTheme } from "@/context/theme-context";
 import { Link } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
@@ -15,30 +16,52 @@ interface SignInFormValues {
   email: string;
   password: string;
 }
+
 const signInSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .min(6, "Password is at least 6 characters")
     .max(20, "Password must not pass 20 characters")
-    .required(),
+    .required("Password is required"),
 });
 
+const FONT = {
+  title: 24,
+  body: 14,
+  small: 12,
+  button: 16,
+};
+
 const SigninForm = () => {
-  const { signInWithCredentials} = useAuth();
+  const { signInWithCredentials } = useAuth();
+  const { theme } = useTheme();
   const [error, setError] = useState<string>("");
 
   const handleLogin = async (values: SignInFormValues) => {
     try {
       await signInWithCredentials(values);
-    } catch(e : any) {
+      setError("");
+    } catch (e: any) {
       setError(e.message);
     }
   };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
-      <Text style={styles.subtitle}>
-        Login with your Apple or Google account
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.surface, borderColor: theme.border },
+      ]}
+    >
+      <Text
+        style={[styles.title, { color: theme.primary, fontSize: FONT.title }]}
+      >
+        Welcome Back
+      </Text>
+      <Text
+        style={[styles.subtitle, { color: theme.subText, fontSize: FONT.body }]}
+      >
+        Login with your email and password
       </Text>
 
       <Formik<SignInFormValues>
@@ -55,10 +78,22 @@ const SigninForm = () => {
           touched,
         }) => (
           <>
-            <Text style={styles.label}>Email</Text>
+            <Text
+              style={[styles.label, { color: theme.text, fontSize: FONT.body }]}
+            >
+              Email
+            </Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  color: theme.text,
+                },
+              ]}
               placeholder="Email"
+              placeholderTextColor={theme.subText}
               value={values.email}
               onChangeText={handleChange("email")}
               onBlur={handleBlur("email")}
@@ -66,16 +101,47 @@ const SigninForm = () => {
               autoCapitalize="none"
             />
             {touched.email && errors.email && (
-              <Text style={styles.error}>{errors.email}</Text>
+              <Text style={[styles.error, { fontSize: FONT.small }]}>
+                {errors.email}
+              </Text>
             )}
 
-            <View style={{flexDirection: "row", justifyContent: 'space-between', alignItems: 'flex-end'}}>
-                <Text style={styles.label}>Password</Text>
-                <Text style={{fontWeight: '500', color: '#543cda'}}>Forgot your password?</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+              }}
+            >
+              <Text
+                style={[
+                  styles.label,
+                  { color: theme.text, fontSize: FONT.body },
+                ]}
+              >
+                Password
+              </Text>
+              <Text
+                style={{
+                  fontWeight: "500",
+                  color: theme.primary,
+                  fontSize: FONT.small,
+                }}
+              >
+                Forgot your password?
+              </Text>
             </View>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  color: theme.text,
+                },
+              ]}
               placeholder="Password"
+              placeholderTextColor={theme.subText}
               value={values.password}
               onChangeText={handleChange("password")}
               onBlur={handleBlur("password")}
@@ -83,24 +149,43 @@ const SigninForm = () => {
               autoCapitalize="none"
             />
             {touched.password && errors.password && (
-              <Text style={styles.error}>{errors.password}</Text>
+              <Text style={[styles.error, { fontSize: FONT.small }]}>
+                {errors.password}
+              </Text>
             )}
 
-            {error &&
-              <Text style={styles.error}>{error}</Text>
-            }
+            {!!error && (
+              <Text style={[styles.error, { fontSize: FONT.small }]}>
+                {error}
+              </Text>
+            )}
 
             <TouchableOpacity
-              style={styles.button}
+              style={[styles.button, { backgroundColor: theme.primary }]}
               onPress={() => handleSubmit()}
             >
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={[styles.buttonText, { fontSize: FONT.button }]}>
+                Login
+              </Text>
             </TouchableOpacity>
           </>
         )}
       </Formik>
 
-      <Text style={styles.closingText}>No account? <Link href={'/auth/sign-up'} style={styles.link}>Sign up</Link></Text>
+      <Text
+        style={[
+          styles.closingText,
+          { color: theme.subText, fontSize: FONT.small },
+        ]}
+      >
+        No account?{" "}
+        <Link
+          href={"/auth/sign-up"}
+          style={[styles.link, { color: theme.primary }]}
+        >
+          Sign up
+        </Link>
+      </Text>
     </View>
   );
 };
@@ -109,48 +194,38 @@ export default SigninForm;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#ffffff",
     width: 400,
     padding: 20,
     paddingVertical: 20,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#e6e6e9",
   },
   title: {
-    fontSize: 24,
     fontWeight: "700",
     marginBottom: 8,
     textAlign: "center",
-    color: '#543cda'
   },
   subtitle: {
-    color: "gray",
     textAlign: "center",
     marginBottom: 20,
   },
   label: {
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 10,
-  }, 
+  },
   input: {
     width: "100%",
     borderWidth: 1,
-    borderColor: "#d1d5db",
     borderRadius: 10,
     padding: 12,
     marginTop: 2,
-    backgroundColor: "#ffffff",
-    // marginBottom: 15,
   },
   error: {
     color: "red",
-    fontSize: 13,
     marginTop: 4,
     marginBottom: 4,
   },
   button: {
-    backgroundColor: "#543cda",
     paddingVertical: 12,
     borderRadius: 10,
     marginTop: 20,
@@ -159,18 +234,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
     fontWeight: "500",
   },
   closingText: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 19,
-    fontSize: 13,
-    color: "#4b5563",
   },
   link: {
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
     fontWeight: "500",
-    color: 'black'
-  }
+  },
 });
