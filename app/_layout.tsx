@@ -23,7 +23,7 @@ export default function RootLayout() {
             },
           }}
         />
-        {!path.startsWith("/auth") && <Footer />}
+        {!path.startsWith("/auth") && !path.startsWith('/quizzes') && <Footer />}
       </SafeAreaView>
     </AuthContextProvider>
   );
