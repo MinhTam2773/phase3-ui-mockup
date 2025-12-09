@@ -7,6 +7,7 @@ Authors: Mikael Ly, Minh Tam Nguyen, Xiaomei He
 */
 
 import CategoryCard from '@/components/CategoryCard';
+import { useAuth } from '@/context/auth-context';
 import Entypo from '@expo/vector-icons/Entypo';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -15,9 +16,8 @@ import { Link, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Home() {
-  
+  const {user} = useAuth();
   const router = useRouter();
-
 
   return (
     <ScrollView style={styles.mainContainer}>
@@ -30,7 +30,7 @@ export default function Home() {
             <Ionicons name="person" size={24} color="#543cda" />
           </View>
           {/* Greeting + Name */}
-          <Text style={styles.userProfileText}> Hi, Alex! </Text>
+          <Text style={styles.userProfileText}> Hi, {user?.user_metadata?.name}! </Text>
         </View>
 
         {/* Header Text/Title */}

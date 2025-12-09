@@ -65,24 +65,6 @@ const MusicSignUpPage = () => {
           Join our community to solve quizzes.
         </Text>
 
-        {/* Social buttons */}
-        {/* <TouchableOpacity style={styles.socialButton}>
-          <Ionicons name="logo-apple" size={20} color="#111827" />
-          <Text style={styles.socialButtonText}>Sign up with Apple</Text>
-        </TouchableOpacity> */}
-
-        {/* <TouchableOpacity style={styles.socialButton}>
-          <Ionicons name="logo-google" size={20} color="#111827" />
-          <Text style={styles.socialButtonText}>Sign up with Google</Text>
-        </TouchableOpacity> */}
-
-        {/* Divider */}
-        {/* <View style={styles.dividerRow}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or create with email</Text>
-          <View style={styles.dividerLine} />
-        </View> */}
-
         {/* Formik form */}
         <Formik<SignUpFormProps>
           initialValues={{

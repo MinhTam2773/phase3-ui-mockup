@@ -1,41 +1,38 @@
-import React, { useState } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Link } from "expo-router";
+import React from "react";
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  Alert,
+  View,
 } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link } from "expo-router";
 
 import CircleProgress from "@/components/CircleProgress";
-
-// static user data
-const STATIC_USER = {
-  nickname: "Alex Chen",
-  email: "alex.chen@example.com",
-  joinedDate: "Oct 2025",
-  isLoggedIn: true, 
-};
+import { useAuth } from "@/context/auth-context";
+import { formatDate } from "@/lib/utils";
 
 // ----------------------------
 //  SECTION 1: USER BASIC INFO
 // ----------------------------
-const ProfileHeaderSection = () => (
+const ProfileHeaderSection = () => {
+  const {user} = useAuth();
+  return (
   <View style={styles.card}>
     <View style={styles.headerRow}>
       <View style={styles.avatar}>
         <Ionicons name="person" size={42} color="#543cda" />
       </View>
       <View>
-        <Text style={styles.nickname}>{STATIC_USER.nickname}</Text>
-        <Text style={styles.subText}>Joined {STATIC_USER.joinedDate}</Text>
+        <Text style={styles.nickname}>{user?.user_metadata?.name}</Text>
+        <Text style={styles.subText}>Joined {formatDate(user?.created_at) }</Text>
       </View>
     </View>
   </View>
-);
+); 
+} 
 
 // ----------------------------
 //  SECTION 2: LEARNING SECTION
@@ -94,6 +91,7 @@ const LearningSection = () => (
 //  SECTION 3: SETTINGS SECTION
 // ----------------------------
 const SettingsSection = () => {
+  const {signOut, user} = useAuth()
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       {
@@ -103,9 +101,8 @@ const SettingsSection = () => {
       {
         text: "Logout",
         style: "destructive",
-        onPress: () => {
-          Alert.alert("Success", "You have been logged out");
-          // TODO: set the real login and log out 
+        onPress: async () => {
+          await signOut();
         },
       },
     ]);
@@ -132,7 +129,7 @@ const SettingsSection = () => {
           <Ionicons name="person-outline" size={22} color="#543cda" />
           <View>
             <Text style={styles.menuText}>Account</Text>
-            <Text style={styles.accountEmail}>{STATIC_USER.email}</Text>
+            <Text style={styles.accountEmail}>{user?.email}</Text>
           </View>
         </View>
         <View style={styles.statusBadge}>
