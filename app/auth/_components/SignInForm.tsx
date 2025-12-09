@@ -1,14 +1,14 @@
-import { useAuth } from '@/context/auth-context';
+import { useAuth } from "@/context/auth-context";
+import { useTheme } from "@/context/theme-context";
 import { Link } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
 import {
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import * as Yup from "yup";
 
@@ -17,146 +17,193 @@ interface SignInFormValues {
   password: string;
 }
 
+
 const signInSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
     .min(6, "Password is at least 6 characters")
     .max(20, "Password must not pass 20 characters")
-    .required(),
+    .required("Password is required"),
 });
 
+const FONT = {
+  title: 24,
+  body: 14,
+  small: 12,
+  button: 16,
+};
+
 const SigninForm = () => {
-  const { signInWithCredentials} = useAuth();
+  const { signInWithCredentials } = useAuth();
+  const { theme } = useTheme();
   const [error, setError] = useState<string>("");
 
   const handleLogin = async (values: SignInFormValues) => {
     try {
       await signInWithCredentials(values);
-    } catch(e : any) {
+      setError("");
+    } catch (e: any) {
       setError(e.message);
     }
   };
-  
+
   return (
-    <ScrollView contentContainerStyle={styles.screen}>
-      {/* Card */}
-      <View style={styles.card}>
-        {/* Header */}
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>
-          Login to your account to continue solving quizzes.
-        </Text>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.surface, borderColor: theme.border },
+      ]}
+    >
+      <Text
+        style={[styles.title, { color: theme.primary, fontSize: FONT.title }]}
+      >
+        Welcome Back
+      </Text>
+      <Text
+        style={[styles.subtitle, { color: theme.subText, fontSize: FONT.body }]}
+      >
+        Login with your email and password
+      </Text>
 
-        <Formik<SignInFormValues>
-          initialValues={{ email: "", password: "" }}
-          validationSchema={signInSchema}
-          onSubmit={handleLogin}
-        >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
-            <View style={{ width: "100%" }}>
-              {/* Email */}
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your email"
-                value={values.email}
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-              {touched.email && errors.email && (
-                <Text style={styles.error}>{errors.email}</Text>
-              )}
+      <Formik<SignInFormValues>
+        initialValues={{ email: "", password: "" }}
+        validationSchema={signInSchema}
+        onSubmit={handleLogin}
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
+          <>
+            <Text
+              style={[styles.label, { color: theme.text, fontSize: FONT.body }]}
+            >
+              Email
+            </Text>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  color: theme.text,
+                },
+              ]}
+              placeholder="Email"
+              placeholderTextColor={theme.subText}
+              value={values.email}
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            {touched.email && errors.email && (
+              <Text style={[styles.error, { fontSize: FONT.small }]}>
+                {errors.email}
+              </Text>
+            )}
 
-              {/* Password */}
-              <View style={styles.passwordHeader}>
-                <Text style={styles.label}>Password</Text>
-                <TouchableOpacity>
-                  <Text style={styles.forgotPassword}>Forgot password?</Text>
-                </TouchableOpacity>
-              </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                value={values.password}
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-              {touched.password && errors.password && (
-                <Text style={styles.error}>{errors.password}</Text>
-              )}
-
-              {/* Error message */}
-              {error && (
-                <Text style={styles.error}>{error}</Text>
-              )}
-
-              {/* Button */}
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => handleSubmit()}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+              }}
+            >
+              <Text
+                style={[
+                  styles.label,
+                  { color: theme.text, fontSize: FONT.body },
+                ]}
               >
-                <Text style={styles.buttonText}>Login</Text>
-              </TouchableOpacity>
-
-              {/* Footer link */}
-              <View style={styles.footerRow}>
-                <Text style={styles.footerText}>No account? </Text>
-                <Link href={'/auth/sign-up'} style={styles.link}>
-                  Sign up
-                </Link>
-              </View>
+                Password
+              </Text>
+              <Text
+                style={{
+                  fontWeight: "500",
+                  color: theme.primary,
+                  fontSize: FONT.small,
+                }}
+              >
+                Forgot your password?
+              </Text>
             </View>
-          )}
-        </Formik>
-      </View>
-    </ScrollView>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  color: theme.text,
+                },
+              ]}
+              placeholder="Password"
+              placeholderTextColor={theme.subText}
+              value={values.password}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+            {touched.password && errors.password && (
+              <Text style={[styles.error, { fontSize: FONT.small }]}>
+                {errors.password}
+              </Text>
+            )}
+
+            {!!error && (
+              <Text style={[styles.error, { fontSize: FONT.small }]}>
+                {error}
+              </Text>
+            )}
+
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: theme.primary }]}
+              onPress={() => handleSubmit()}
+            >
+              <Text style={[styles.buttonText, { fontSize: FONT.button }]}>
+                Login
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </Formik>
+
+      <Text
+        style={[
+          styles.closingText,
+          { color: theme.subText, fontSize: FONT.small },
+        ]}
+      >
+        No account?{" "}
+        <Link
+          href={"/auth/sign-up"}
+          style={[styles.link, { color: theme.primary }]}
+        >
+          Sign up
+        </Link>
+      </Text>
+    </View>
   );
 };
 
 export default SigninForm;
 
 const styles = StyleSheet.create({
-  // Background
-  screen: {
-    flexGrow: 1,
-    backgroundColor: "#543cda",
-    alignItems: "center",
-    justifyContent: "center",
+  container: {
     width: 400,
     padding: 20,
     paddingVertical: 20,
-  },
-  // Card
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 24,
-    paddingVertical: 24,
-    paddingHorizontal: 20,
-    width: "100%",
-    maxWidth: 420,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    elevation: 4,
+    borderRadius: 20,
+    borderWidth: 1,
   },
   title: {
-    fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 6,
-    color: "#543cda",
   },
   subtitle: {
     textAlign: "center",
@@ -164,57 +211,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginTop: 8,
-    marginBottom: 4,
-    color: "#111827",
-  },
-  passwordHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  forgotPassword: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: "#543cda",
+    fontWeight: "600",
+    marginTop: 10,
   },
   input: {
     width: "100%",
     borderWidth: 1,
-    borderColor: "#d1d5db",
     borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    backgroundColor: "#f9fafb",
-    fontSize: 15,
+    padding: 12,
+    marginTop: 2,
   },
   error: {
-    color: "#ef4444",
-    fontSize: 12,
+    color: "red",
     marginTop: 4,
   },
   button: {
-    backgroundColor: "#543cda",
-    paddingVertical: 14,
-    borderRadius: 999,
-    marginTop: 18,
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginTop: 20,
     alignItems: "center",
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "500",
   },
-  footerRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 16,
-  },
-  footerText: {
-    fontSize: 13,
-    color: "#4b5563",
+  closingText: {
+    textAlign: "center",
+    marginTop: 19,
   },
   link: {
     textDecorationLine: "underline",

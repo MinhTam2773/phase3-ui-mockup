@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/auth-context";
+import { useTheme } from "@/context/theme-context";
 import { SignUpFormProps } from "@/lib/types";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
@@ -13,16 +14,6 @@ import {
   View,
 } from "react-native";
 import * as Yup from "yup";
-
-// interface MusicSignUpFormValues {
-//   name: string;
-//   email: string;
-//   password: string;
-//   confirmPassword: string;
-//   // favoriteGenre: string;
-//   // role: "listener" | "artist" | "";
-//   acceptTerms: boolean;
-// }
 
 const musicSignUpValidation = Yup.object().shape({
   name: Yup.string()
@@ -43,37 +34,64 @@ const musicSignUpValidation = Yup.object().shape({
   ),
 });
 
+const FONT = {
+  title: 24,
+  body: 14,
+  small: 12,
+  button: 16,
+};
+
+const ICON = {
+  sm: 12,
+};
+
 const MusicSignUpPage = () => {
   const { signUpWithCredentials } = useAuth();
+  const { theme } = useTheme();
   const [error, setError] = useState<string>("");
 
   const handleSignUp = async (values: SignUpFormProps) => {
     try {
       await signUpWithCredentials(values);
-    } catch (error: any) {
-      setError(error.message);
+      setError("");
+    } catch (e: any) {
+      setError(e.message);
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.screen}>
-      {/* Card */}
-      <View style={styles.card}>
-        {/* Header */}
-        <Text style={styles.title}>Sign Up</Text>
-        <Text style={styles.subtitle}>
+    <ScrollView
+      contentContainerStyle={[
+        styles.screen,
+        { backgroundColor: theme.headerBackground },
+      ]}
+    >
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: theme.surface, shadowColor: "#000" },
+        ]}
+      >
+        <Text
+          style={[styles.title, { color: theme.primary, fontSize: FONT.title }]}
+        >
+          Sign Up
+        </Text>
+        <Text
+          style={[
+            styles.subtitle,
+            { color: theme.subText, fontSize: FONT.body },
+          ]}
+        >
           Join our community to solve quizzes.
         </Text>
 
-        {/* Formik form */}
         <Formik<SignUpFormProps>
           initialValues={{
             name: "",
             email: "",
             password: "",
             confirmPassword: "",
-            // favoriteGenre: "",
-            // role: "",
             acceptTerms: false,
           }}
           validationSchema={musicSignUpValidation}
@@ -89,24 +107,54 @@ const MusicSignUpPage = () => {
             touched,
           }) => (
             <View style={{ width: "100%" }}>
-              {/* Display Name */}
-              <Text style={styles.label}>Display Name</Text>
+              <Text
+                style={[
+                  styles.label,
+                  { color: theme.text, fontSize: FONT.body },
+                ]}
+              >
+                Display Name
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    color: theme.text,
+                  },
+                ]}
                 placeholder="Your name or stage name"
+                placeholderTextColor={theme.subText}
                 value={values.name}
                 onChangeText={handleChange("name")}
                 onBlur={handleBlur("name")}
               />
               {touched.name && errors.name && (
-                <Text style={styles.error}>{errors.name}</Text>
+                <Text style={[styles.error, { fontSize: FONT.small }]}>
+                  {errors.name}
+                </Text>
               )}
 
-              {/* Email */}
-              <Text style={styles.label}>Email</Text>
+              <Text
+                style={[
+                  styles.label,
+                  { color: theme.text, fontSize: FONT.body },
+                ]}
+              >
+                Email
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    color: theme.text,
+                  },
+                ]}
                 placeholder="Enter your email"
+                placeholderTextColor={theme.subText}
                 value={values.email}
                 onChangeText={handleChange("email")}
                 onBlur={handleBlur("email")}
@@ -114,38 +162,71 @@ const MusicSignUpPage = () => {
                 autoCapitalize="none"
               />
               {touched.email && errors.email && (
-                <Text style={styles.error}>{errors.email}</Text>
+                <Text style={[styles.error, { fontSize: FONT.small }]}>
+                  {errors.email}
+                </Text>
               )}
 
-              {/* Password */}
-              <Text style={styles.label}>Password</Text>
+              <Text
+                style={[
+                  styles.label,
+                  { color: theme.text, fontSize: FONT.body },
+                ]}
+              >
+                Password
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    color: theme.text,
+                  },
+                ]}
                 placeholder="Password"
+                placeholderTextColor={theme.subText}
                 secureTextEntry
                 value={values.password}
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
               />
               {touched.password && errors.password && (
-                <Text style={styles.error}>{errors.password}</Text>
+                <Text style={[styles.error, { fontSize: FONT.small }]}>
+                  {errors.password}
+                </Text>
               )}
 
-              {/* Confirm Password */}
-              <Text style={styles.label}>Confirm Password</Text>
+              <Text
+                style={[
+                  styles.label,
+                  { color: theme.text, fontSize: FONT.body },
+                ]}
+              >
+                Confirm Password
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    color: theme.text,
+                  },
+                ]}
                 placeholder="Confirm password"
+                placeholderTextColor={theme.subText}
                 secureTextEntry
                 value={values.confirmPassword}
                 onChangeText={handleChange("confirmPassword")}
                 onBlur={handleBlur("confirmPassword")}
               />
               {touched.confirmPassword && errors.confirmPassword && (
-                <Text style={styles.error}>{errors.confirmPassword}</Text>
+                <Text style={[styles.error, { fontSize: FONT.small }]}>
+                  {errors.confirmPassword}
+                </Text>
               )}
 
-              {/* Accept terms */}
               <TouchableOpacity
                 style={styles.termsRow}
                 onPress={() =>
@@ -155,35 +236,63 @@ const MusicSignUpPage = () => {
                 <View
                   style={[
                     styles.checkbox,
-                    values.acceptTerms && styles.checkboxChecked,
+                    {
+                      backgroundColor: values.acceptTerms
+                        ? theme.primary
+                        : theme.surface,
+                      borderColor: values.acceptTerms
+                        ? theme.primary
+                        : theme.border,
+                    },
                   ]}
                 >
                   {values.acceptTerms && (
-                    <Ionicons name="checkmark" size={12} color="#ffffff" />
+                    <Ionicons name="checkmark" size={ICON.sm} color="#ffffff" />
                   )}
                 </View>
-                <Text style={styles.termsText}>
+                <Text
+                  style={[
+                    styles.termsText,
+                    { color: theme.subText, fontSize: FONT.small },
+                  ]}
+                >
                   I agree to the Terms of Service and Privacy Policy.
                 </Text>
               </TouchableOpacity>
               {errors.acceptTerms && (
-                <Text style={styles.error}>{errors.acceptTerms}</Text>
+                <Text style={[styles.error, { fontSize: FONT.small }]}>
+                  {errors.acceptTerms}
+                </Text>
               )}
 
-              {!!error && <Text style={styles.error}>{error}</Text>}
+              {!!error && (
+                <Text style={[styles.error, { fontSize: FONT.small }]}>
+                  {error}
+                </Text>
+              )}
 
-              {/* Button */}
               <TouchableOpacity
-                style={styles.button}
+                style={[styles.button, { backgroundColor: theme.primary }]}
                 onPress={handleSubmit as any}
               >
-                <Text style={styles.buttonText}>Sign Up</Text>
+                <Text style={[styles.buttonText, { fontSize: FONT.button }]}>
+                  Sign Up
+                </Text>
               </TouchableOpacity>
 
-              {/* Footer link */}
               <View style={styles.footerRow}>
-                <Text style={styles.footerText}>Already have an account? </Text>
-                <Link href={"/auth/sign-in"} style={styles.link}>
+                <Text
+                  style={[
+                    styles.footerText,
+                    { color: theme.subText, fontSize: FONT.small },
+                  ]}
+                >
+                  Already have an account?{" "}
+                </Text>
+                <Link
+                  href={"/auth/sign-in"}
+                  style={[styles.link, { color: theme.primary }]}
+                >
                   Login
                 </Link>
               </View>
@@ -198,98 +307,52 @@ const MusicSignUpPage = () => {
 export default MusicSignUpPage;
 
 const styles = StyleSheet.create({
-  // background
   screen: {
     flexGrow: 1,
-    backgroundColor: "#543cda",
     alignItems: "center",
     justifyContent: "center",
     width: 400,
     padding: 20,
     paddingVertical: 20,
   },
-  // card
   card: {
-    backgroundColor: "#ffffff",
     borderRadius: 24,
     paddingVertical: 24,
     paddingHorizontal: 20,
     width: "100%",
     maxWidth: 420,
-    shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,
     elevation: 4,
   },
   title: {
-    fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 6,
-    color: "#543cda",
   },
   subtitle: {
     textAlign: "center",
-    color: "#6b7280",
     marginBottom: 20,
   },
-  socialButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 999,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    marginBottom: 10,
-    backgroundColor: "#ffffff",
-  },
-  socialButtonText: {
-    marginLeft: 8,
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#111827",
-  },
-  dividerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 16,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#e5e7eb",
-  },
-  dividerText: {
-    marginHorizontal: 8,
-    fontSize: 12,
-    color: "#9ca3af",
-  },
   label: {
-    fontSize: 14,
     fontWeight: "500",
     marginTop: 8,
     marginBottom: 4,
-    color: "#111827",
   },
   input: {
     width: "100%",
     borderWidth: 1,
-    borderColor: "#d1d5db",
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    backgroundColor: "#f9fafb",
     fontSize: 15,
   },
   error: {
     color: "red",
-    fontSize: 12,
     marginTop: 4,
   },
   button: {
-    backgroundColor: "#543cda",
     paddingVertical: 14,
     borderRadius: 999,
     marginTop: 18,
@@ -297,7 +360,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
     fontWeight: "600",
   },
   footerRow: {
@@ -305,45 +367,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 16,
   },
-  footerText: {
-    fontSize: 13,
-    color: "#4b5563",
-  },
+  footerText: {},
   link: {
     textDecorationLine: "underline",
     fontWeight: "500",
   },
-  // select the role
-  roleRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  roleButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 999,
-    paddingVertical: 8,
-    marginTop: 4,
-    backgroundColor: "#ffffff",
-  },
-  roleButtonActive: {
-    backgroundColor: "#e5e7eb",
-    borderColor: "#6b7280",
-  },
-  roleButtonText: {
-    marginLeft: 6,
-    fontSize: 13,
-    color: "#6b7280",
-  },
-  roleButtonTextActive: {
-    color: "#111827",
-    fontWeight: "600",
-  },
-  // checkbox styles
   termsRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -354,19 +382,11 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: "#d1d5db",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 8,
-    backgroundColor: "#ffffff",
-  },
-  checkboxChecked: {
-    backgroundColor: "#543cda",
-    borderColor: "#543cda",
   },
   termsText: {
     flex: 1,
-    fontSize: 12,
-    color: "#4b5563",
   },
 });
