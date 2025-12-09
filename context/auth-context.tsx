@@ -42,7 +42,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
       // Otherwise set state
       setUser(data.user);
-      console.log("Current user:", data.user);
+      // console.log("Current user:", data.user);
     };
 
     getCurrentUser();
@@ -75,7 +75,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const signInWithCredentials = async (form: SignInFormProps) => {
     const { data, error } = await supabase.auth.signInWithPassword(form);
 
-    console.log(data);
+    console.log("Login: " + data.user?.email);
 
     if (error) {
       console.log(error.message);

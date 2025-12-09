@@ -8,7 +8,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import * as Yup from "yup";
 
@@ -16,6 +16,7 @@ interface SignInFormValues {
   email: string;
   password: string;
 }
+
 
 const signInSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -202,11 +203,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "700",
-    marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
     textAlign: "center",
+    color: "#6b7280",
     marginBottom: 20,
   },
   label: {
@@ -223,14 +224,12 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     marginTop: 4,
-    marginBottom: 4,
   },
   button: {
     paddingVertical: 12,
     borderRadius: 10,
     marginTop: 20,
     alignItems: "center",
-    width: "100%",
   },
   buttonText: {
     color: "white",

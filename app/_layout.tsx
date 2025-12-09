@@ -27,7 +27,7 @@ function AppLayout() {
           },
         }}
       />
-      {!isAuth && <Footer />}
+      {!path.startsWith("/auth") && !path.startsWith("/quizzes") && <Footer />}
     </SafeAreaView>
   );
 }

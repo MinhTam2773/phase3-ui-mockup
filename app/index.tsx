@@ -147,8 +147,7 @@ export default function Home() {
       >
         <Link
           href={{
-            pathname: `/quizzes/[quizId]`,
-            params: { quizId: String("d051862d-2250-4997-9de9-ce796655621d") },
+            pathname: `/quizzes/quiz-input`,
           }}
           asChild
         >
